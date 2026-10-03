@@ -9,6 +9,7 @@ import { Srv } from '@/types/services'
 import { Endpoint } from '@/types/endpoints'
 import { Config } from '@/types/config'
 import { tls } from '@/types/tls'
+import { DnsTunnel } from '@/types/dnsTunnels'
 
 // Online tags, by kind. The backend marks each list `omitempty`, so a poll
 // with nobody online answers with {} rather than three empty lists. Every
@@ -37,6 +38,7 @@ export interface LoadedData {
   services?: Srv[]
   endpoints?: Endpoint[]
   tls?: tls[]
+  dnstunnels?: DnsTunnel[]
 }
 
 // The duplicate-tag check works on any of the four lists without caring which
@@ -61,6 +63,7 @@ const Data = defineStore('Data', {
     endpoints: <Endpoint[]>[],
     clients: <Client[]>[],
     tlsConfigs: <tls[]>[],
+    dnsTunnels: <DnsTunnel[]>[],
   }),
   actions: {
     async loadData() {
@@ -96,6 +99,7 @@ const Data = defineStore('Data', {
       if (Object.hasOwn(data, 'services')) this.services = data.services ?? []
       if (Object.hasOwn(data, 'endpoints')) this.endpoints = data.endpoints ?? []
       if (Object.hasOwn(data, 'tls')) this.tlsConfigs = data.tls ?? []
+      if (Object.hasOwn(data, 'dnstunnels')) this.dnsTunnels = data.dnstunnels ?? []
     },
     async loadInbounds(ids: number[]): Promise<Inbound[]> {
       const options = ids.length > 0 ? {id: ids.join(",")} : {}

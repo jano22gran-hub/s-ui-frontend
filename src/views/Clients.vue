@@ -489,7 +489,8 @@ const headers = [
   { title: i18n.global.t('client.group'), key: 'group' },
   { title: i18n.global.t('pages.inbounds'), key: 'inbounds', width: 10 },
   { title: i18n.global.t('actions.action'), key: 'actions', sortable: false },
-  { title: i18n.global.t('stats.volume'), key: 'volume' },
+  // Sorted by usage, not by quota: the column shows used / quota.
+  { title: i18n.global.t('stats.volume'), key: 'volume', value: (c: Client) => c.up + c.down },
   { title: i18n.global.t('date.expiry'), key: 'expiry' },
   { title: i18n.global.t('online'), key: 'online' },
   { title: i18n.global.t('date.created'), key: 'createdAt' },

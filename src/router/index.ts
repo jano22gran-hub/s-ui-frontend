@@ -51,6 +51,11 @@ const routes = [
         component: () => import('@/views/Rules.vue'),
       },
       {
+        path: '/dnstunnels',
+        name: 'pages.dnstunnels',
+        component: () => import('@/views/DnsTunnels.vue'),
+      },
+      {
         path: '/tls',
         name: 'pages.tls',
         component: () => import('@/views/Tls.vue'),
