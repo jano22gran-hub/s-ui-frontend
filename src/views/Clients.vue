@@ -91,6 +91,7 @@
       >
         <template #activator="{ props }">
           <v-btn
+            :aria-label="$t('a11y.tools')"
             v-bind="props"
             hide-details
             variant="text"
@@ -144,6 +145,7 @@
       >
         <template #activator="{ props }">
           <v-btn
+            :aria-label="$t('a11y.filter')"
             v-bind="props"
             hide-details
             variant="text"
@@ -349,6 +351,7 @@
         </template>
         <template #item.actions="{ item }">
           <v-icon
+            :aria-label="$t('actions.edit')"
             class="me-2"
             @click="showModal(item.id)"
           >
@@ -361,6 +364,7 @@
           >
             <template #activator="{ props }">
               <v-icon
+                :aria-label="$t('actions.del')"
                 class="me-2"
                 color="error"
                 v-bind="props"
@@ -393,6 +397,7 @@
             </v-card>
           </v-menu>
           <v-icon
+            :aria-label="$t('a11y.qrCode')"
             class="me-2"
             @click="showQrCode(item.id)"
           >
@@ -400,6 +405,7 @@
           </v-icon>
           <v-icon
             v-if="Data().enableTraffic"
+            :aria-label="$t('stats.graphTitle')"
             icon="mdi-chart-line"
             @click="showStats(item.name)"
           >
@@ -489,8 +495,9 @@ const headers = [
   { title: i18n.global.t('client.group'), key: 'group' },
   { title: i18n.global.t('pages.inbounds'), key: 'inbounds', width: 10 },
   { title: i18n.global.t('actions.action'), key: 'actions', sortable: false },
-  // Sorted by usage, not by quota: the column shows used / quota.
-  { title: i18n.global.t('stats.volume'), key: 'volume', value: (c: Client) => c.up + c.down },
+  // Sorted by what was used, not by the quota: with unlimited clients every
+  // volume is 0 and the column did not sort at all (#1277).
+  { title: i18n.global.t('stats.volume'), key: 'volume', sortRaw: (a: Client, b: Client) => (a.up + a.down) - (b.up + b.down) },
   { title: i18n.global.t('date.expiry'), key: 'expiry' },
   { title: i18n.global.t('online'), key: 'online' },
   { title: i18n.global.t('date.created'), key: 'createdAt' },

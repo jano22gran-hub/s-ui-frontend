@@ -4,6 +4,7 @@ import { Dial } from "./dial"
 import { Transport } from "./transport"
 import RandomUtil from "@/plugins/randomUtil"
 import { QuicFields } from './httpClient'
+import type { Hysteria2Realm } from './outbounds'
 
 export const InTypes = {
   Direct: 'direct',
@@ -55,6 +56,8 @@ interface InboundBasics extends Listen {
   id: number
   type: InType
   tag: string
+  // Absent means enabled; a disabled inbound is kept but not run
+  enable?: boolean
   tls_id: number
   addrs?: Addr[]
   // The outbound block a client link is built from, shaped by protocol.
@@ -151,6 +154,7 @@ export interface Hysteria2 extends InboundBasics, QuicFields {
     content?: string
   }
   brutal_debug?: boolean
+  realm?: Hysteria2Realm
 }
 export interface Tun extends InboundBasics {
   interface_name?: string

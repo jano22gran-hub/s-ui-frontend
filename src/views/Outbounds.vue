@@ -59,6 +59,7 @@
         {{ $t('actions.testAll') || 'Test all' }}
       </v-btn>
     </v-col>
+    <UrlTestTarget />
   </v-row>
   <v-row>
     <v-col
@@ -134,6 +135,7 @@
               />
               <v-icon
                 v-else
+                :aria-label="$t('actions.test')"
                 icon="mdi-speedometer"
                 @click="checkOutbound(item.tag)"
               >
@@ -162,6 +164,9 @@
                     <template #activator="{ props }">
                       <v-icon
                         v-bind="props"
+                        role="img"
+                        :aria-hidden="false"
+                        :aria-label="checkResults[item.tag].errorMessage || $t('failed')"
                         size="small"
                         color="error"
                         icon="mdi-close-circle"
@@ -176,6 +181,7 @@
         <v-divider />
         <v-card-actions style="padding: 0;">
           <v-btn
+            :aria-label="$t('actions.edit')"
             icon="mdi-file-edit"
             @click="showModal(item.id)"
           >
@@ -187,6 +193,7 @@
             />
           </v-btn>
           <v-btn
+            :aria-label="$t('actions.del')"
             icon="mdi-file-remove"
             style="margin-inline-start:0;"
             color="warning"
@@ -230,6 +237,7 @@
           </v-overlay>
           <v-btn
             v-if="Data().enableTraffic"
+            :aria-label="$t('stats.graphTitle')"
             icon="mdi-chart-line"
             @click="showStats(item.tag)"
           >
@@ -255,6 +263,8 @@ import Stats from '@/layouts/modals/Stats.vue'
 import Sessions from '@/layouts/modals/Sessions.vue'
 import { Outbound } from '@/types/outbounds'
 import { computed, ref } from 'vue'
+import UrlTestTarget from '@/components/UrlTestTarget.vue'
+import { useUrlTestTarget } from '@/composables/useUrlTestTarget'
 
 // What api/checkOutbound answers with.
 interface CheckReply {
@@ -271,10 +281,11 @@ interface CheckResult {
 }
 
 const checkResults = ref<Record<string, CheckResult>>({})
+const { link: testLink } = useUrlTestTarget()
 
 const checkOutbound = async (tag: string) => {
   checkResults.value = { ...checkResults.value, [tag]: { loading: true, success: false } }
-  const msg = await HttpUtils.get<CheckReply>('api/checkOutbound', { tag })
+  const msg = await HttpUtils.get<CheckReply>('api/checkOutbound', { tag, link: testLink.value })
   const success = msg.success && msg.obj?.OK
   const errorMessage = success ? undefined : (msg.obj?.Error ?? msg.msg ?? '')
   checkResults.value = {

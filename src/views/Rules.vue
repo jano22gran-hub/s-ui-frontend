@@ -72,6 +72,7 @@
       >
         <template #activator="{ props }">
           <v-btn
+            :aria-label="$t('a11y.tools')"
             v-bind="props"
             hide-details
             variant="text"
@@ -261,6 +262,7 @@
         <v-divider />
         <v-card-actions style="padding: 0;">
           <v-btn
+            :aria-label="$t('actions.edit')"
             icon="mdi-file-edit"
             @click="showRulesetModal(index)"
           >
@@ -271,6 +273,7 @@
             />
           </v-btn>
           <v-btn
+            :aria-label="$t('actions.del')"
             icon="mdi-file-remove"
             style="margin-inline-start:0;"
             color="warning"
@@ -352,6 +355,7 @@
         <v-divider />
         <v-card-actions style="padding: 0;">
           <v-btn
+            :aria-label="$t('actions.edit')"
             icon="mdi-file-edit"
             @click="showRuleModal(index)"
           >
@@ -362,6 +366,7 @@
             />
           </v-btn>
           <v-btn
+            :aria-label="$t('actions.del')"
             icon="mdi-file-remove"
             style="margin-inline-start:0;"
             color="warning"
@@ -371,6 +376,32 @@
               activator="parent"
               location="top"
               :text="$t('actions.del')"
+            />
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            :aria-label="$t('actions.moveUp')"
+            icon="mdi-arrow-up"
+            :disabled="index == 0"
+            @click="moveRule(index, -1)"
+          >
+            <v-icon /><v-tooltip
+              activator="parent"
+              location="top"
+              :text="$t('actions.moveUp')"
+            />
+          </v-btn>
+          <v-btn
+            :aria-label="$t('actions.moveDown')"
+            icon="mdi-arrow-down"
+            style="margin-inline-start:0;"
+            :disabled="index == rules.length - 1"
+            @click="moveRule(index, 1)"
+          >
+            <v-icon /><v-tooltip
+              activator="parent"
+              location="top"
+              :text="$t('actions.moveDown')"
             />
           </v-btn>
           <v-overlay
@@ -548,6 +579,15 @@ const saveRulesetModal = (data:ruleset) => {
   rulesetModal.value.visible = false
 }
 const delRuleset = (index: number) => { rulesets.value.splice(index, 1); delRulesetOverlay.value[index] = false }
+
+// Dragging is mouse-only: HTML5 drag and drop never starts from a touch in
+// most mobile browsers, so the buttons are the way to reorder there (#1283).
+const moveRule = (index: number, delta: number) => {
+  const target = index + delta
+  if (target < 0 || target >= rules.value.length) return
+  const [item] = rules.value.splice(index, 1)
+  rules.value.splice(target, 0, item)
+}
 
 const draggedItemIndex = ref<number | null>(null)
 const onDragStart = (index: number) => { draggedItemIndex.value = index }
