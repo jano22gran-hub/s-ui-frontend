@@ -49,7 +49,20 @@
         elevation="5"
         min-width="200"
         :title="item.tag"
+        :class="{ 'inbound-disabled': item.enable === false }"
       >
+        <template #append>
+          <v-switch
+            :model-value="item.enable !== false"
+            :loading="toggling[item.id]"
+            :disabled="toggling[item.id]"
+            :aria-label="$t('enable')"
+            color="success"
+            density="compact"
+            hide-details
+            @update:model-value="(val:any) => toggleEnable(item, !!val)"
+          />
+        </template>
         <v-card-subtitle style="margin-top: -15px;">
           <v-row>
             <v-col>{{ item.type }}</v-col>
@@ -125,6 +138,7 @@
         <v-divider />
         <v-card-actions style="padding: 0;">
           <v-btn
+            :aria-label="$t('actions.edit')"
             icon="mdi-file-edit"
             @click="showModal(item.id)"
           >
@@ -136,6 +150,7 @@
             />
           </v-btn>
           <v-btn
+            :aria-label="$t('actions.del')"
             icon="mdi-file-remove"
             style="margin-inline-start:0;"
             color="warning"
@@ -178,6 +193,7 @@
             </v-card>
           </v-overlay>
           <v-btn
+            :aria-label="$t('actions.clone')"
             icon="mdi-content-duplicate"
             :loading="cloneLoading"
             @click="clone(item.id)"
@@ -191,6 +207,7 @@
           </v-btn>
           <v-btn
             v-if="Data().enableTraffic"
+            :aria-label="$t('stats.graphTitle')"
             icon="mdi-chart-line"
             @click="showStats(item.tag)"
           >
@@ -256,6 +273,19 @@ const delInbound = async (id: number) => {
   if (success) delOverlay.value[index] = false
 }
 
+const toggling = ref<Record<number, boolean>>({})
+
+const toggleEnable = async (item: Inbound, val: boolean) => {
+  if ((item.enable !== false) === val) return
+  toggling.value = { ...toggling.value, [item.id]: true }
+  const full = (await Data().loadInbounds([item.id]))[0]
+  if (full?.id) {
+    full.enable = val
+    await Data().save("inbounds", "edit", full)
+  }
+  toggling.value = { ...toggling.value, [item.id]: false }
+}
+
 let cloneLoading = ref(false)
 
 const clone = async (id: number) => {
@@ -299,3 +329,8 @@ const closeSessions = () => {
   sessions.value.visible = false
 }
 </script>
+<style scoped>
+.inbound-disabled {
+  opacity: 0.6;
+}
+</style>

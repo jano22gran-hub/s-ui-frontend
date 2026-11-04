@@ -2,6 +2,7 @@
   <v-app-bar :elevation="5">
     <v-icon
       v-if="isMobile"
+      :aria-label="$t('a11y.menu')"
       icon="mdi-menu"
       @click="$emit('toggleDrawer')"
     />
@@ -26,8 +27,21 @@
     >
       {{ $t('setting.maintenance') }}
     </v-chip>
+    <v-chip
+      v-if="update"
+      v-tooltip="$t('update.hint', { current: update.current })"
+      color="info"
+      variant="flat"
+      density="comfortable"
+      prepend-icon="mdi-update"
+      class="mr-2"
+      @click="Data().updateVisible = true"
+    >
+      {{ $t('update.available', { version: update.latest }) }}
+    </v-chip>
     <v-btn
       v-tooltip="$t('donate')"
+      :aria-label="$t('donate')"
       icon
       variant="text"
       href="https://donate.alireza0.dev"
@@ -44,6 +58,7 @@
     <v-menu>
       <template #activator="{ props }">
         <v-btn
+          :aria-label="$t('a11y.language')"
           icon
           v-bind="props"
         >
@@ -64,6 +79,7 @@
     <v-menu>
       <template #activator="{ props }">
         <v-btn
+          :aria-label="$t('a11y.theme')"
           icon
           v-bind="props"
         >
@@ -110,4 +126,5 @@ const changeLocale = (l: string) => {
 }
 const isActiveLocale = (l: string) => i18nLocale.value === l
 const maintenance = computed((): boolean => Data().maintenance)
+const update = computed(() => Data().update)
 </script>

@@ -50,6 +50,7 @@
                   <v-spacer />
                   <v-col cols="auto">
                     <v-icon
+                      :aria-label="$t('actions.close')"
                       icon="mdi-close"
                       @click="menu = false"
                     />
@@ -140,6 +141,7 @@
               <template v-if="i == 'i-sys'">
                 <v-icon
                   v-tooltip:top="$t('actions.update')"
+                  :aria-label="$t('actions.update')"
                   icon="mdi-update"
                   color="primary"
                   size="small"
@@ -247,6 +249,18 @@
                       color="primary"
                     >
                       v{{ tilesData.sys?.appVersion }}
+                    </v-chip>
+                    <v-chip
+                      v-if="Data().update"
+                      v-tooltip:top="$t('update.hint', { current: Data().update?.current })"
+                      density="compact"
+                      color="info"
+                      variant="flat"
+                      prepend-icon="mdi-update"
+                      class="ms-1"
+                      @click="Data().updateVisible = true"
+                    >
+                      v{{ Data().update?.latest }}
                     </v-chip>
                   </v-col>
                   <v-col cols="3">
@@ -544,18 +558,29 @@ const reloadSys = async () => {
   }
 }
 
-let intervalId: ReturnType<typeof setInterval> | null = null
+// The next poll is scheduled only once the previous one has answered. A fixed
+// interval fired again while a slow api/status was still in flight, and the
+// duplicate cancelled it. The generation stops a poll that was in flight
+// across stopTimer/startTimer from starting a second chain.
+let timerId: ReturnType<typeof setTimeout> | null = null
+let pollGen = 0
 
 const startTimer = () => {
-  intervalId = setInterval(() => {
-    reloadData()
-  }, 2000)
+  const gen = ++pollGen
+  const tick = () => {
+    timerId = setTimeout(async () => {
+      await reloadData()
+      if (gen === pollGen) tick()
+    }, 2000)
+  }
+  tick()
 }
 
 const stopTimer = () => {
-  if (intervalId) {
-    clearInterval(intervalId)
-    intervalId = null
+  pollGen++
+  if (timerId) {
+    clearTimeout(timerId)
+    timerId = null
   }
 }
 
