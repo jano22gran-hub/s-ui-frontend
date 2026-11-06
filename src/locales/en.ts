@@ -249,6 +249,8 @@ export default {
     statsBucketSeconds: "Traffic Sample Interval",
     statsBucketSecondsHint: "Traffic samples are grouped into buckets of this many seconds; larger = fewer rows, lower chart resolution",
     timeLoc: "Timezone Location",
+    logLevel: "Panel Log Level",
+    logLevelHint: "Saved and applied immediately; SUI_LOG_LEVEL / SUI_DEBUG on the server override it",
     globalReset: "Reset All Traffic (cron)",
     globalResetHint: "Cron schedule; empty = disabled",
     subEncode: "Enable Encoding",

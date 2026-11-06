@@ -217,6 +217,19 @@
                 placeholder="0 0 1 * *"
               />
             </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-select
+                v-model="settings.logLevel"
+                v-tooltip:top="$t('setting.logLevelHint')"
+                :items="panelLogLevels"
+                :label="$t('setting.logLevel')"
+                hide-details
+              />
+            </v-col>
           </v-row>
         </v-window-item>
 
@@ -432,7 +445,17 @@ const settings = ref({
   subClashSprtAll: "false",
   subClashUdp: "false",
   globalReset: "",
+  logLevel: "",
 })
+
+// "" keeps the default (info, or SUI_LOG_LEVEL when set on the server).
+const panelLogLevels = [
+  { title: 'Default (INFO)', value: '' },
+  { title: 'DEBUG', value: 'debug' },
+  { title: 'INFO', value: 'info' },
+  { title: 'WARNING', value: 'warn' },
+  { title: 'ERROR', value: 'error' },
+]
 
 // The panel settings, exactly as the block above spells them out.
 type PanelSettings = typeof settings.value

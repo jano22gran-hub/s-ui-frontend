@@ -249,6 +249,8 @@ export default {
     statsBucketSeconds: "بازهٔ نمونه‌برداری ترافیک",
     statsBucketSecondsHint: "نمونه‌های ترافیک در باکت‌هایی به این اندازه (ثانیه) ذخیره می‌شوند؛ بزرگ‌تر = ردیف کمتر، دقت نمودار کمتر",
     timeLoc: "منطقه زمانی",
+    logLevel: "سطح لاگ پنل",
+    logLevelHint: "ذخیره و فوراً اعمال می‌شود؛ SUI_LOG_LEVEL / SUI_DEBUG روی سرور آن را نادیده می‌گیرند",
     globalReset: "ریست کل ترافیک (cron)",
     globalResetHint: "زمان‌بندی cron؛ خالی = غیرفعال",
     subEncode: "رمزگذاری",
