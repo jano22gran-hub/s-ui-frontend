@@ -99,25 +99,41 @@ const props = defineProps<{
 
 const loading = ref(false)
 const lines = ref<string[]>([])
-const logLevel = ref('info')
+// The last filter picked is remembered; it used to snap back to INFO every
+// time the dialog opened.
+const LOGS_PREF_KEY = 'sui.logs.prefs'
+function loadPrefs(): { level: string, count: number } {
+  try {
+    const p = JSON.parse(localStorage.getItem(LOGS_PREF_KEY) ?? '{}')
+    return { level: typeof p.level === 'string' ? p.level : 'info', count: Number(p.count) > 0 ? Number(p.count) : 10 }
+  } catch {
+    return { level: 'info', count: 10 }
+  }
+}
+function savePrefs() {
+  try {
+    localStorage.setItem(LOGS_PREF_KEY, JSON.stringify({ level: logLevel.value, count: logCount.value }))
+  } catch { /* storage unavailable: keep the in-memory choice */ }
+}
+const prefs = loadPrefs()
+const logLevel = ref(prefs.level)
 const logLevels = [
   { title: 'DEBUG', value: 'debug' },
   { title: 'INFO', value: 'info' },
   { title: 'WARNING', value: 'warning' },
   { title: 'ERROR', value: 'err' },
 ]
-const logCount = ref(10)
+const logCount = ref(prefs.count)
 
 watch(() => props.visible, (v) => {
   lines.value = []
-  logLevel.value = 'info'
-  logCount.value = 10
   if (v) {
     loadData()
   }
 })
 
 async function loadData() {
+  savePrefs()
   loading.value = true
   const data = await HttpUtils.get<string[]>('api/logs',{ c: logCount.value, l: logLevel.value })
   if (data.success) {
